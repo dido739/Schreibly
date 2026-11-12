@@ -1,17 +1,26 @@
 {
-  "name": "tui",
-  "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "name": "schreibly-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently -k -n server,web -c blue,green \"node --watch server/index.js\" \"vite\"",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "demo": "vite build && node server/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1166.0",
+    "@supabase/supabase-js": "^2.119.0",
     "@toast-ui/editor": "^3.2.2",
-    "vite": "^8.3.5"
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.3.0",
+    "concurrently": "^10.0.7",
+    "vite": "^8.3.8"
   }
 }
