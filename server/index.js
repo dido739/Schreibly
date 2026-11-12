@@ -138,6 +138,14 @@ app.get(
   }),
 );
 
+app.use('/api', (_req, res, next) => {
+  if (storageConfigured) return next();
+  res.status(503).json({
+    error:
+      'Backblaze B2 is not configured. Copy .env.example to .env, fill in the B2_* values and restart the server.',
+  });
+});
+
 app.use('/api', auth);
 
 // Documents ---------------------------------------------------------------
@@ -254,9 +262,14 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: err.message || 'Server error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Schreibly server on http://localhost:${PORT}`);
-  console.log(`  storage : ${storageConfigured ? `B2 bucket "${B2_BUCKET}"` : 'NOT CONFIGURED (.env)'}`);
-  console.log(`  auth    : ${authEnabled ? 'Supabase' : 'disabled (guest mode)'}`);
-  console.log(`  frontend: ${fs.existsSync(DIST) ? 'serving dist/' : 'dist/ not built (use vite dev on :5173)'}`);
-});
+// On Vercel the app is exported and run as a serverless function (see api/index.js).
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Schreibly server on http://localhost:${PORT}`);
+    console.log(`  storage : ${storageConfigured ? `B2 bucket "${B2_BUCKET}"` : 'NOT CONFIGURED (.env)'}`);
+    console.log(`  auth    : ${authEnabled ? 'Supabase' : 'disabled (guest mode)'}`);
+    console.log(`  frontend: ${fs.existsSync(DIST) ? 'serving dist/' : 'dist/ not built (use vite dev on :5173)'}`);
+  });
+}
+
+export default app;
